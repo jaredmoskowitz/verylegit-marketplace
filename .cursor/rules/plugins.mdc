@@ -1,0 +1,53 @@
+---
+description: Rules for the verylegit Claude Code plugin marketplace
+globs: plugins/**,.claude-plugin/**
+alwaysApply: false
+---
+
+# verylegit-marketplace plugin rules
+
+A Claude Code plugin marketplace. See [AGENTS.md](mdc:AGENTS.md) for full context.
+
+## Plugin structure
+
+Every plugin lives at `plugins/<name>/` with:
+
+- `.claude-plugin/plugin.json` (required) — must include `name`, `version`, `description`, `author`
+- Optional `skills/`, `commands/`, `mcp/`, `hooks/`, `hooks-handlers/` directories, declared in `plugin.json`
+
+## Marketplace registration
+
+When adding a new plugin, you MUST also:
+
+1. Add an entry to [.claude-plugin/marketplace.json](mdc:.claude-plugin/marketplace.json) with `name`, `description`, `source: "./plugins/<name>"`, and `category`.
+2. Add a documentation section to [README.md](mdc:README.md) matching the existing format (tagline, description, usage examples, requirements).
+
+A plugin without both of these is invisible to users.
+
+## Skill descriptions are triggers
+
+- Every `SKILL.md` frontmatter `description` field is the trigger signal for Claude Code.
+- Vague descriptions cause skills to never activate. Be specific: list trigger phrases, use cases, and explicit cues.
+- Match the style of existing skills in this repo (`captain`, `debate`, `bear-notes`).
+
+## MCP servers
+
+- Node.js 18+, ESM (`.mjs`).
+- Each plugin's `mcp/` has its own `package.json`. Don't introduce a root-level `node_modules`.
+- Stdio transport only unless explicitly asked otherwise.
+- Document macOS / system requirements in both README.md and the plugin's SKILL.md.
+
+## Slash commands
+
+- One file per command at `plugins/<name>/commands/<command>.md`.
+- File must be self-contained — readable without external context.
+- File name MUST match the slash command name.
+
+## No dependencies between plugins
+
+Each plugin in this marketplace is standalone. Don't import code from one plugin into another.
+
+## No telemetry, no bundled binaries
+
+- Never add network analytics, error reporting, or phone-home.
+- No compiled binaries committed; source only.
